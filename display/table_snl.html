@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0">
+
+	<title>S@NL Tables</title>
+	<link rel="stylesheet" type="text/css" href="../js/lib/data_tables/css/jquery.dataTables.css">
+	<link rel="stylesheet" type="text/css" href="../js/lib/flags/flags.css">	
+	<style>
+	
+	</style>
+	<script>g_table_type = "USER";</script>	
+</head>
+
+<body>
+
+<div id="help_text"></div>
+
+Verberg tabel <input type="checkbox" id="checkbox_hide" >
+<br>
+<br>
+<div class="dataTables_wrapper" 
+<div id="seti_div_table">	
+	<table id="seti_table" class="cell-border hover stripe order-column" >
+	</table>   
+</div>
+<br>
+</div>
+
+Doorgetrokken lijn: 
+<select id="rac_select">
+	<option>S@NL-RAC</option>
+	<option>RAC</option>
+	<option>AWG14</option>
+</select>
+
+Gestreepte lijn: 
+<select id="rac_select_dash">
+	<option>S@NL-RAC</option>
+	<option>RAC</option>
+	<option>AWG14</option>
+	<option>Geen</option>	
+</select>
+
+
+<div style="text-align:center;border:1px solid gray">RAC</div>
+<div id="graph_rac"></div>
+<br>
+Credits in de toekomst <input type="checkbox" id="checkbox_time" >
+<div style="text-align:center;border:1px solid gray" id="graph_credit_text">Credits</div>
+<div id="graph_credit"></div>
+<div style="text-align:center;border:1px solid gray" id="graph_credit_tm_text">Credits in de toekomst</div>
+<div id="graph_credit_tm"></div>
+
+<script src="../js/lib/jquery.js"></script>
+<script src="../../stats/js/graph/highstock.js"></script>
+<script src="../js/graph/modules/exporting.js"></script>
+<script src="../js/graph_rac.js"></script>	
+<script src="../js/graph_credit.js"></script>
+<script src="../js/graph.js"></script>
+<script src="../js/php_interface.js"></script>		
+<script src="../js/lib/data_tables/js/jquery.dataTables.js"></script>
+<script src="../js/table.js"></script>
+<script src="../js/table_user.js"></script>	
+</body>
+</html>

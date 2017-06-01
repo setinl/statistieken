@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<head>
+<style>
+.ss_table table, td, th {
+    border: 0px gray;
+}
+
+.ss_table th {
+    background-color: gray;
+    color: white;
+    padding: 4px;
+}
+
+.ss_table td {
+	padding-left: 4px; padding-right: 10px;
+}
+
+.ss_table th:nth-child(1)
+{
+	width: 200px;
+}
+
+.ss_table th:nth-child(2)
+{
+	width: 400px;	
+}
+
+
+</style>
+</head>
+
+<body>
+	<button onclick="buttonResetErrors('SetiAtNlTok1681')">Reset errors</button> <span id="text_button_reset_errors"></span>
+	<br>
+	<br>
+	<button onclick="buttonForceReload('SetiAtNlTok1681')">Force reload</button><span id="text_button_force_reload"></span>
+        <br>
+        (Set Data time stamp of user and team file to -1, forcing a read if there are no error present)<br>
+	<br>
+	<br>
+	<br>
+	<form name=myform>
+            <button onclick="buttonStatsManually('SetiAtNlTok1681')">Start manually</button><span id="text_button_manually"></span>
+	</form>	
+	
+	<br>
+	<br>
+<br>
+
+<table id="table_status_zero" class="ss_table">
+	<tbody>
+		<tr>
+			<th></th>			
+			<th></th>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_zero_status_start"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_zero_status_duration"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_zero_status"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_zero_status_user"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_zero_status_processed"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_zero_status_fetch"></span></td>
+		</tr>			
+		<tr>
+			<td></td>
+			<td><span id="text_zero_error"></span></td>
+		</tr>		
+	</tbody>
+</table>
+<br>
+<span id="text_status_update" class="ss_table"></span>
+<br>
+<table id="table_status_all" class="ss_table">
+	<tbody>
+		<tr>
+			<th></th>			
+			<th></th>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_start"></span></td>
+		</tr>		
+		<tr>
+			<td></td>
+			<td><span id="text_error_user"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_error_team"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_error_total"></span></td>
+		</tr>			
+	</tbody>
+</table>
+
+<table id="table_status_user" class="ss_table">
+	<tbody>
+		<tr>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_user_start"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_user_file_duration"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_user_processed_duration"></span></td>
+		</tr>		
+		<tr>
+			<td></td>
+			<td><span id="text_status_user_added_duration"></span></td>
+		</tr>		
+		<tr>
+			<td></td>
+			<td><span id="text_status_user_url_time"></span></td>
+		</tr>	
+	</tbody>
+</table>	
+
+<table id="table_status_team" class="ss_table">
+	<tbody>
+		<tr>
+			<th></th>
+			<th></th>
+		</tr>	
+		<tr>
+			<td></td>
+			<td><span id="text_status_team_start"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_team_file_duration"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_team_processed_duration"></span></td>
+		</tr>		
+		<tr>
+			<td></td>
+			<td><span id="text_status_team_added_duration"></span></td>
+		</tr>		
+		<tr>
+			<td></td>
+			<td><span id="text_status_team_url_time"></span></td>
+		</tr>					
+	</tbody>
+</table>	
+	
+<table id="table_status_post" class="ss_table">
+	<tbody>
+		<tr>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_todo"></span></td>
+		</tr>			
+		<tr>
+			<td></td>
+			<td><span id="text_status_progress_start"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_progress_duration"></span></td>
+		</tr>		
+		<tr>
+			<td></td>
+			<td><span id="text_status_progress"></span></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><span id="text_status_progress_error"></span></td>
+		</tr>		
+	</tbody>
+</table>
+	
+		
+	<script type="text/javascript" src="../js/lib/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="../js/url.js"></script>		
+	<script type="text/javascript" src="../js/status.js"></script>		
+	<script type="text/javascript" src="../js/language.js"></script>	
+	<script type="text/javascript" src="../js/database_status.js?123"></script>
+	<script type="text/javascript" src="../js/php_interface.js"></script>	
+	<script type="text/javascript" src="js/admin_stats.js"></script>	
+	<script type="text/javascript" src="js/admin_php_interface.js"></script>	
+	
+<!-- ============================================== -->		
+	
+</body>

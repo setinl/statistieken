@@ -1,0 +1,6 @@
+<IfModule !mpm_winnt.c>
+AuthType Basic
+AuthName "seti"
+AuthUserFile "/opt/bitnami/apache2/htdocs/seti/stats/admin/.htpasswd"
+require valid-user
+</IfModule>

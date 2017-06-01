@@ -1,0 +1,9 @@
+
+Database
+__seti
+__seti_stats
+
+User:
+
+setiatnl_r
+privileges DATA -> SELECT <-- ONLY
