@@ -28,9 +28,9 @@ function connectSqlSeti()
 	{
 		// server
                 
-		$mysqli  = @new mysqli("localhost",$sql_password_rw,"__seti");
+		$mysqli  = @new mysqli("localhost","setiatnl",$sql_password_rw,"__seti");
 		if ($mysqli ->connect_errno)	{
-			LoggingAddError("database error (connectSqlSeti) seti: " . $mysqli ->connect_errno);
+			LoggingAddError("database error (connectSqlSeti read/write) seti: " . $mysqli ->connect_errno);
 			return false;
 		}	
 	}
@@ -55,7 +55,7 @@ function connectSqlSetiStatsC()
 		// server
 		$mysqli  = @new mysqli("localhost","setiatnl",$sql_password_rw,"__seti_stats");
 		if ($mysqli ->connect_errno)	{
-			LoggingAddError("database error seti_stats: " . $mysqli ->connect_errno);
+			LoggingAddError("database error (connectSqlSetiStatsC read/write): " . $mysqli ->connect_errno);
 			return false;
 		}	
 	}	

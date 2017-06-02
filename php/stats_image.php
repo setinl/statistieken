@@ -1,14 +1,18 @@
 <?php
 
-require '../generate/php/common.php';
-require 'sql/sql_read.php';
+require_once '../generate/php/common.php';
+require_once 'passwords/pass_read.php';
+require_once 'sql/sql_read.php';
 
 function GetUserDataForImage($id)
 {
     $id = intval($id);
     $sql = connectSqlSeti();
     $table = SQL_TABLE_USERS;
-    
+    if ($sql === false)
+    {
+        return null;
+    } 
     $command = "SELECT ".SQL_USER_NAME.",".SQL_TOTAL_CREDIT.",".SQL_RAC.",".SQL_RANK_CREDIT.",".SQL_RANK_RAC." FROM ".SQL_TABLE_LIST_SNL_TEAM." WHERE ".SQL_ID."='$id' LIMIT 1";
     $result = $sql->query($command);
     if ($result !== FALSE)
@@ -43,11 +47,14 @@ $rank_rac = $row[SQL_RANK_RAC];
 
 //echo $user_name.$total_credit.$rac.$rank_credit.$rank_rac;
 
-header('Content-Type: image/png');
-
 // Load And Create Image From Source
-$im = imagecreatefromjpeg('../img/arecibo_stats.jpg');
+$im = imagecreatefromjpeg('../img/stats.jpg');
+if ($im===false)
+{
+    die('invalid image');
+}
 
+header('Content-Type: image/jpeg');
 
 // $im = imagecreatetruecolor(400, 30);
  
@@ -117,7 +124,8 @@ imagettftext($im, $size,$angle,$left,$top, $textSetiColor, $font, $text);
 
 
 // Send Image to Browser
-imagepng($im);
+//imagepng($im);
+imagejpeg($im);
 
 // Clear Memory
 imagedestroy($im);

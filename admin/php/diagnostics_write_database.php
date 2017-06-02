@@ -1,8 +1,10 @@
 <?php
 
+// write database test
+
 require '../../generate/php/common.php';
-require('../../php/passwords/pass_read.php');
-require '../../php/sql/sql_read.php';
+require('../../generate/php/passwords/pass.php');
+require '../../generate/php/sql/sql.php';
 
 echo 'diagnostics<br>';
 
@@ -19,10 +21,6 @@ LoggingAdd("-------------------------------------------------", TRUE);
 LoggingAdd($localhost, TRUE);
 LoggingAdd($currentPhp, TRUE);
 
-//$hostname = gethostname();
-//$status = strpos($hostname, WEB_SERVER); 
-//var_dump($status);
-
 if (IsDebugServer())
 {
     $server = "Server: Debug";
@@ -38,7 +36,7 @@ $df = disk_free_space("/");
 $ds = ConvertSize($ds);
 $df = ConvertSize($df);
 
-// test database read
+// test database write
 
 $sql = connectSqlSeti();
 if ($sql === false)
@@ -61,7 +59,7 @@ if ($sql === false)
     }
     else
     {
-        $sqlStatusTest = "Database access read: OK";
+        $sqlStatusTest = "Database access write: OK";
         LoggingAdd($sqlStatusTest, true);
         echo $sqlStatusTest.'<br>';
     }
@@ -97,5 +95,34 @@ function ConvertSize($size){
   $f_base = floor($base);
   return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
 }
+
+function connectSqlSetiD()
+{
+    $array = GetPassWordSqlReadWrite();
+    $sql_password_rw = $array["sql_password_rw"];
+    echo $sql_password_rw.'<br>';
+    if (IsDebugServer())
+	{
+		// test machine
+		$mysqli  = @new mysqli("localhost","setiatnl","TILpOIYCB0BSYDm2","__seti");
+		if ($mysqli ->connect_errno)	{
+			LoggingAddError("database error (connectSqlSeti) seti: " . $mysqli ->connect_errno);
+			return false;
+		}
+	}
+	else
+	{
+		// server
+                
+		$mysqli  = @new mysqli("localhost",$sql_password_rw,"__seti");
+		if ($mysqli ->connect_errno)	{
+			LoggingAddError("database error (connectSqlSeti read/write) seti: " . $mysqli ->connect_errno);
+			return false;
+		}	
+	}
+	return $mysqli ;
+}
+
+
 
 ?>

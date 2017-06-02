@@ -12,7 +12,7 @@
  */
 
 require_once  '../passwords/pass_read.php';
-require_once( 'sql/sql_read.php' );
+require_once( 'sql/sql_read_table.php' );
 
 // DB table to use
 $table = 'list_snl_team';

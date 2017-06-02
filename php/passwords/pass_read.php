@@ -1,10 +1,8 @@
 <?php
     function GetPassWordSqlRead()
     {
-        $array = [
-            "sql_password_r" => "",
-        ];
-        return $array;
-    }    
+        $arrayPass = array("sql_password_r" => "z");
+        return $arrayPass;
+    } 
     
  ?>

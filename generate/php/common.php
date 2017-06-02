@@ -5,7 +5,12 @@ define ("WEB_SERVER", "ip");
 function IsDebugServer()
 {
     $hostname = gethostname();
-    return (strpos($hostname, WEB_SERVER) == false); 
+    $status = strpos($hostname, WEB_SERVER); 
+    if ($status === false)
+    {
+        return true;
+    }
+    return false;
 }
 
 require_once "email/stats_seti_nl.php";
@@ -19,6 +24,7 @@ define("DEBUG_DATA_FOLDER", "/WebServer/UniServerZSeti/www/data/");
 define("WEB_SERVER_BACKUP_FOLDER", "/home/bitnami/stats/backup/");
 define("DEBUG_BACKUP_FOLDER", "/WebServer/UniServerZSeti/www/stats/backup/");
 
+define("FILE_ERROR_LOG", "error");
 
 // progress
 
@@ -221,8 +227,6 @@ define("SQL_TABLE_LIST_ALL_COUNTRIES", "list_all_countries");
 define("SQL_TABLE_LIST_ALL_COUNTRIES_TEMP", "list_all_countries_temp");
 define("SQL_TABLE_LIST_ALL_COUNTRIES_DUMMY", "list_all_countries_dummy");
 
-define("FILE_ERROR_LOG", "../log/error.log");
-
 ///
 
 
@@ -392,9 +396,6 @@ function LoggingOpen($file_in)
 
 //	echo $glogging_fullname;
 	
-	LoggingAdd("Localhost: ".gethostname(), TRUE);
-	LoggingAdd("Current PHP version: ".phpversion(), TRUE);
-	
 }
 
 function LoggingClose()
@@ -497,10 +498,12 @@ function LoggingRemoveOld($sql)
 	}
 }
 
-function LoggingAppendOpen($file)
+function LoggingAppendOpen($file_in)
 {
 	global $gfp_logging_append;
-	
+
+        $file = LoggingFolder($file_in);        
+        
 	$time = new DateTime("now"); 	
 	$file_time = $file.$time->format("_Y-m-d").".log";
 	$gfp_logging_append = fopen($file_time, "ab");

@@ -4,7 +4,9 @@ define ("WEB_SERVER", "ip");
 
 function sqlTables()
 {
-	$hostname = gethostname();
+    $array = GetPassWordSqlRead();
+    $sql_password_r = $array["sql_password_r"];   
+    $hostname = gethostname();  // don't use IsDebugServer, because it's defined in the unused common.php
 	if (strpos($hostname, WEB_SERVER) === false)
 	{
 		// test machine
