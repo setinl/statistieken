@@ -6,6 +6,9 @@ define ("ZERO_DAY_DEBUG", 0);	// 0 of 1 (1 = debug mode)
 
 function zeroDayStats()
 {
+    $bError = false;
+    $bDoNotRun = false;
+    $errorTxt = "unknown";
 	global $gi_error_count;	
 	
 	date_default_timezone_set("UTC"); 
@@ -15,8 +18,67 @@ function zeroDayStats()
 	$timeStart = new DateTime();	
 	$time_stamp = $timeStart->getTimestamp();
 	
-	LoggingOpen(LOCAL_LOGGING_FOLDER."zero_day");
+        LoggingOpen("zero_day");
 
+        $sql = connectSqlSeti();	
+	if ($sql === false)
+        {
+            LoggingAddError("connectSqlSeti, failed");
+            LoggingClose();
+            return;
+        }
+        $todo = readStatus($sql,SQL_TODO);
+        if ($todo === FALSE)
+        {
+            $bError = true;
+            $errorTxt = "Unable to read todo status";
+        }
+	if ($todo === TODO_LIST)
+        {
+            $bDoNotRun = true;
+            $errorTxt = "There is an item in the todo list"; 
+        }
+        $error_count_users = readStatus($sql, SQL_USER_ERROR_COUNT);
+        if ($error_count_users === FALSE)
+        {
+            $bError = true;
+            $errorTxt = "Unable to read error_count_users status";     
+        }
+        if ($error_count_users > 0)
+        {
+            $bError = true;
+            $errorTxt = "error_count_users > 0";  
+        }
+        
+        if (userCurrentlyRunning($sql))
+        {
+            $bDoNotRun = true;
+            $errorTxt = "Users currently running";             
+        }
+        if (teamCurrentlyRunning($sql))
+        {
+            $bDoNotRun = true;
+            $errorTxt = "Team currently running";             
+        }         
+        
+        if ($bError)
+        {
+            // an error but not adding to the error list.
+            LoggingAdd("Error: ".$errorTxt, true);          
+            mysqli_close($sql);
+            LoggingClose();
+            return;
+        }
+        if ($bDoNotRun)
+        {
+            LoggingAdd($errorTxt, true);          
+            mysqli_close($sql);
+            LoggingClose();
+            return;
+        }      
+   
+        LoggingAdd("Started", true); 
+        
 	$retry_count = 3;				// try 2 times to get the data
 	while ($retry_count > 0)
 	{
@@ -103,7 +165,7 @@ function zeroDayUpdateUsers($sql,$timeStart)
 					$rac_sql = $row[SQL_RAC];
 					if ($rac_sql > MINIMUM_RAC_FOR_ZERO_DAY_UPDATE)
 					{
-						sleep(5);
+						sleep(3); //5
 						$timeStop = new DateTime("now"); 
 						$interval = $timeStart->diff($timeStop);
 						$interval_string = $interval->format('%h H, %i M, %s S');						

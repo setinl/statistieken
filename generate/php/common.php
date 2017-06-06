@@ -541,4 +541,22 @@ function LoggingAppendAddError($txt)
 	LoggingAppendAdd($txt, TRUE);
 }
 
+function userCurrentlyRunning($sql)
+{
+	$status = readStatus($sql ,SQL_USER_ERROR_COUNT);
+	if ($status === FALSE) return true;
+	if ($status == "") return true;
+	if ($status == -1) return true;				// running
+	return false;
+}
+
+function teamCurrentlyRunning($sql)
+{
+	$status = readStatus($sql ,SQL_TEAM_ERROR_COUNT);
+	if ($status === FALSE) return true;
+	if ($status == "") return true;
+	if ($status == -1) return true;				// running
+	return false;
+}
+
 ?>

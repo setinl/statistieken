@@ -2,7 +2,7 @@
 
 function userGzReadAndProcess($sql,$url_gz, $file_local, &$stats_added)
 {
-	if (!userGzAreWeCurrentlyRunning($sql))							// check the -1 start marker
+	if (!userCurrentlyRunning($sql))							// check the -1 start marker
 	{
 		$status = writeStatus($sql, SQL_USER_ERROR_COUNT, -1);	// mark start
 		if ($status)
@@ -261,13 +261,6 @@ function userGzSetNewTimestamp($sql, $timestamp_url)
 	return $status;
 }
 
-function userGzAreWeCurrentlyRunning($sql)
-{
-	$status = readStatus($sql ,SQL_USER_ERROR_COUNT);
-	if ($status === FALSE) return true;
-	if ($status == "") return true;
-	if ($status == -1) return true;				// running
-	return false;
-}
+
 
 ?>

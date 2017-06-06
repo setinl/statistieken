@@ -2,7 +2,7 @@
 
 function teamGzReadAndProcess($sql,$url_gz, $file_local, &$stats_added)
 {
-	if (!teamGzAreWeCurrentlyRunning($sql))							// check the -1 start marker
+	if (!teamCurrentlyRunning($sql))							// check the -1 start marker
 	{
 		$status = writeStatus($sql, SQL_TEAM_ERROR_COUNT, -1);	// mark start
 		if ($status)
@@ -215,13 +215,5 @@ function teamGzSetNewTimestamp($sql, $timestamp_url)
 	return $status;
 }
 
-function teamGzAreWeCurrentlyRunning($sql)
-{
-	$status = readStatus($sql ,SQL_TEAM_ERROR_COUNT);
-	if ($status === FALSE) return true;
-	if ($status == "") return true;
-	if ($status == -1) return true;				// running
-	return false;
-}
 
 ?>
