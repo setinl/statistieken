@@ -33,7 +33,7 @@ function tableTeamsAll()
             addUserColumn(data[7], row, 6);
         },		
         "serverSide": true,
-        "ajax": g_siteUrl+"/stats/php/data_tables/server_list_all_teams.php",	
+        "ajax": g_siteUrl+"/php/data_tables/server_list_all_teams.php",	
 	
         "aLengthMenu": [[10, 25, 50, 100, 200, 500], [10, 25, 50, 100, 200, 500]],
         "iDisplayLength": 10,
@@ -68,8 +68,8 @@ function tableUserSet(team_id, team_name)
 	tableUserHeader(team_id, team_name);
                 
 	var team_url;
-	if (team_id === "30190") team_url = g_siteUrl + "/stats/php/data_tables/server_list_snl_team.php";
-	else team_url = g_siteUrl + "/stats/php/data_tables/server_list_other_team.php";
+	if (team_id === "30190") team_url = g_siteUrl + "/php/data_tables/server_list_snl_team.php";
+	else team_url = g_siteUrl + "/php/data_tables/server_list_other_team.php";
 	g_table_user.ajax.url(team_url);
 	g_table_user.ajax.reload();
 }
@@ -85,8 +85,8 @@ function tableUser(team_id, team_name)
     } );         
         
     var team_url;
-    if (team_id === "30190") team_url = g_siteUrl+"/stats/php/data_tables/server_list_snl_team.php";
-    else team_url = g_siteUrl+"/stats/php/data_tables/server_list_other_team.php";
+    if (team_id === "30190") team_url = g_siteUrl+"/php/data_tables/server_list_snl_team.php";
+    else team_url = g_siteUrl+"/php/data_tables/server_list_other_team.php";
 	
     var def = Array([4, 'asc']);
     var sortingTable = getSorting(SORTING_TABLE_USER, def);                
@@ -139,7 +139,7 @@ function tableUsersAll()
 	tableUsersAllHeader();
 	
 	var url;
-	url = g_siteUrl+"/stats/php/data_tables/server_list_all_users.php";
+	url = g_siteUrl+"/php/data_tables/server_list_all_users.php";
 	
     g_table_users_all = $('#seti_table_users_all').dataTable( {
 		"createdRow": function ( row, data, index )
@@ -187,7 +187,7 @@ function tableCountriesAll()
 	tableCountriesAllHeader();
 	
 	var url;
-	url = g_siteUrl+"/stats/php/data_tables/server_list_all_countries.php";
+	url = g_siteUrl+"/php/data_tables/server_list_all_countries.php";
 	
     g_table_countries_all = $('#seti_table_countries_all').dataTable( {
 		"createdRow": function ( row, data, index )
@@ -230,7 +230,7 @@ function tableCountry(country_id)
 	tableCountryHeader(country_id);
 	
 	var url;
-	url = g_siteUrl+"/stats/php/data_tables/server_list_country.php";
+	url = g_siteUrl+"/php/data_tables/server_list_country.php";
 	
     g_table_country = $('#seti_table_country').dataTable( {
 		"createdRow": function ( row, data, index )

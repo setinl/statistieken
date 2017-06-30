@@ -26,9 +26,10 @@ else
             
     $subject = "Seti statistics";
     $body = "$message";
-
-    $headers = array ('From' => $from, 'To' => $to,'Subject' => $subject);
-     $smtp = Mail::factory('smtp',
+    $context = "text/plain;charset=utf-8";
+    
+    $headers = array ('From' => $from, 'To' => $to,'Subject' => $subject, 'Content-Type' => $context);
+    $smtp = Mail::factory('smtp',
     array ('host' => $host,
         'port' => $port,
         'auth' => true,

@@ -1,7 +1,0 @@
-
-2017-05-June 16:35:37 Started
-2017-05-June 17:07:14 ===================> ERROR: (zeroDayReadId) Unable to read file: http://setiathome.berkeley.edu/userw.php?id=9473073
-2017-05-June 17:07:19 ===================> ERROR: (zeroDayReadId) Unable to read file: http://setiathome.berkeley.edu/userw.php?id=9473073
-2017-05-June 17:07:34 ===================> ERROR: (zeroDayReadId) Unable to read file: http://setiathome.berkeley.edu/userw.php?id=9473073
-2017-05-June 17:07:59 (zeroDayGet) Not able to read, server seems down
-2017-05-June 17:07:59 zeroDayUpdateUsers abort

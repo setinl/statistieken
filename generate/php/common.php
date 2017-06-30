@@ -1,5 +1,7 @@
 <?php
 
+
+
 define ("WEB_SERVER", "ip");
 
 function IsDebugServer()
@@ -487,8 +489,8 @@ function LoggingRemoveOld($sql)
 						$time14 = $time + (60*60*24*14); 	// remove > 14 days
 						if (time() > $time14)
 						{
-							unlink(LOCAL_LOGGING_FOLDER.$file);
-							LoggingAdd("Deleting file: ".LOCAL_LOGGING_FOLDER.$file,TRUE);								
+							unlink(LoggingFolder('').$file);
+							LoggingAdd("Deleting file: ".LoggingFolder('').$file,TRUE);								
 						}
 					}
 				}

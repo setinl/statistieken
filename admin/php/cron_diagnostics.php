@@ -2,24 +2,21 @@
 
 require '../../generate/php/common.php';
 require('../../php/passwords/pass_read.php');
+require '../../generate/php/passwords/pass.php';
 require '../../php/sql/sql_read.php';
 
-echo 'diagnostics<br>';
+$CRLF = '\r\n';
 
-echo 'Hostname: '.gethostname().'<br>';
-echo 'Logging folder: '.LoggingFolder('diagnostics').'<br>';
+$statusText = 'S@NL diagnostics'.$CRLF;
+$statusText.= 'Hostname: '.gethostname().$CRLF;
+$statusText.= 'Logging folder: '.LoggingFolder('diagnostics').$CRLF;
 LoggingOpen('diagnostics');
 
 $localhost = "Localhost: ".gethostname();
 $currentPhp = "Current PHP version: ".phpversion();
 
-LoggingAdd("-------------------------------------------------", TRUE);
+$statusText.= "-------------------------------------------------".$CRLF;
 
-
-LoggingAdd($localhost, TRUE);
-LoggingAdd($currentPhp, TRUE);
-
-//$hostname = gethostname();
 //$status = strpos($hostname, WEB_SERVER); 
 //var_dump($status);
 
@@ -31,7 +28,8 @@ else
 {
     $server = "Server: Internet";
 }
-echo $server.'<br>';
+
+$statusText.= $server.$CRLF;
         
 $ds = disk_total_space("/");
 $df = disk_free_space("/");
@@ -45,7 +43,7 @@ if ($sql === false)
 {
     $sqlStatusTest = "Failed: connectSqlSeti";
     LoggingAddError($sqlStatusTest, true);
-    echo "ERROR: ".$sqlStatusTest.'<br>';
+    $statusText .= "ERROR: ".$sqlStatusTest.$CRLF;
 }
  else
 {
@@ -57,13 +55,13 @@ if ($sql === false)
     {
         $sqlStatusTest = "Failed: SELECT";
         LoggingAddError($sqlStatusTest, true);
-        echo "ERROR: ".$sqlStatusTest.'<br>';
+        $statusText .= "ERROR: ".$sqlStatusTest.$CRLF;
     }
     else
     {
         $sqlStatusTest = "Database access read: OK";
         LoggingAdd($sqlStatusTest, true);
-        echo $sqlStatusTest.'<br>';
+        $statusText .= $sqlStatusTest.$CRLF;
     }
 }
 mysqli_close($sql);
@@ -72,10 +70,9 @@ mysqli_close($sql);
 //$sql_password_r = $array["sql_password_r"];
 //echo $sql_password_r;
 
-$emailText = "Diagnostics: Total diskspace: ".$ds. " Free diskspace: ".$df. " ".$server;
-echo $emailText.'<br>';
-   
-if (SendEmail("fred@efmer.com","diagnostics test mail","a diagnostics test" ))
+$statusText .= "Diagnostics: Total diskspace: ".$ds. " Free diskspace: ".$df. " ".$server.$CRLF;
+
+if (SendEmail("fred@efmer.com", $statusText))
 {
     $emailStatusText = 'Success: Email send';
 }
@@ -84,12 +81,17 @@ else
     $emailStatusText = 'FAILED to send email';               
 }
 
+
 LoggingAdd($emailStatusText, TRUE);
-echo $emailStatusText.'<br>';
+$statusText .= $emailStatusText.$CRLF;
 
 LoggingClose();	
 
-echo 'END of diagnostics<br>';
+$statusText .= 'END of diagnostics'.$CRLF;
+
+$echoText = CrLfToBr($statusText);
+
+echo $echoText;
 
 function ConvertSize($size){
   $base = log($size) / log(1024);
@@ -97,5 +99,11 @@ function ConvertSize($size){
   $f_base = floor($base);
   return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
 }
+
+function CrLfToBr($string) { 
+    $string = str_replace('\r\n', "<br>", $string); 
+    return $string; 
+} 
+
 
 ?>

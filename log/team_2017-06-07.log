@@ -1,0 +1,21 @@
+
+2017-07-June 15:39:28 Check if update needed: http://setiathome.berkeley.edu/stats/team.gz timestamp: [sql] -1 [url] 415775 [GMT] 2017 Jun 06 23:00:00
+2017-07-June 15:39:29 (gzRead) Start reading: http://setiathome.berkeley.edu/stats/team.gz Folder: /WebServer/UniServerZSeti/www/data/team.gz
+2017-07-June 15:39:32 (gzRead) Finished reading: http://setiathome.berkeley.edu/stats/team.gz after: 0 H, 0 M, 4 S
+2017-07-June 15:39:32 
+2017-07-June 15:39:32 (teamGzProcess) Processing team data: /WebServer/UniServerZSeti/www/data/team.gz
+2017-07-June 16:02:50 empty: block len: 10<<<<<>>>>
+</teams>
+
+2017-07-June 16:02:50 Record team read: 64111, Blocks read: 7602
+2017-07-June 16:02:50 (teamsGzProcess) Finished processing teams: 0 H, 23 M, 18 S
+2017-07-June 16:02:50 
+2017-07-June 16:02:51 (teamStatsAdd) Start adding team results
+2017-07-June 16:02:59 New data table entry, tableLast: 0 381
+2017-07-June 16:03:08 New data table entry, tableLast: 0 382
+2017-07-June 16:03:08 End of team database
+2017-07-June 16:03:08 (teamStatsAdd) Added: 290 skipped: 0
+2017-07-June 16:03:08 (teamStatsAdd) Finished after: 0 H, 0 M, 17 S
+2017-07-June 16:03:08 
+2017-07-June 16:03:08 ===================> SUCCESS, no errors detected.===========================
+2017-07-June 16:03:08 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

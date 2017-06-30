@@ -1,6 +1,6 @@
 function phpSendData(data, callback)
 {
-	var url = g_siteUrl + "/stats/php/interface.php";
+	var url = g_siteUrl + "/php/interface.php";
 
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function()
@@ -19,7 +19,7 @@ function phpSendData(data, callback)
 
 function phpSendDataArg(context, data, callback, arg1, arg2, arg3)
 {
-	var url = g_siteUrl + "/stats/php/interface.php";
+	var url = g_siteUrl + "/php/interface.php";
 
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function()
