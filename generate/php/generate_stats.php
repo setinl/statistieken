@@ -223,8 +223,6 @@ function updateLists()
 			$interval_string = $interval->format('%h H, %i M, %s S');
 			writeStatus($sql, SQL_PROGRESS_DURATION, $interval_string);			
 			writeStatus($sql, SQL_PROGRESS_ERROR, $gi_error_count);
-                        
-                        BackupSeti();
 		}
 		
 		mysqli_close($sql);	

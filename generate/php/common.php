@@ -1,9 +1,24 @@
 <?php
 
+define ("SERVER_ID_DEBUG", 0);
+define ("SERVER_ID_AMAZON", 1);
+define ("SERVER_ID_LINODE", 2);
+
+define ("WEB_SERVER_AMAZON", "ip");
+define ("WEB_SERVER_LINODE", "efmer");
 
 
-define ("WEB_SERVER", "ip");
+function IsDebugServer()
+{
+    $status = IsWhatServer();
+    if ($status == SERVER_ID_DEBUG)
+    {
+        return true;
+    }
+    return false;
+}
 
+/*
 function IsDebugServer()
 {
     $hostname = gethostname();
@@ -14,17 +29,37 @@ function IsDebugServer()
     }
     return false;
 }
+ */
+
+function IsWhatServer()
+{
+    $hostname = gethostname();
+    $status = strpos($hostname, WEB_SERVER_AMAZON); 
+    if ($status === false)
+    {
+        $status = strpos($hostname, WEB_SERVER_LINODE); 
+        if ($status === false)
+        {
+            return SERVER_ID_DEBUG;
+        }
+        return SERVER_ID_LINODE;
+    }
+    return SERVER_ID_AMAZON;   
+}
+
 
 require_once "email/stats_seti_nl.php";
 
 // All capitals are always global constants 
 
-define("WEB_SERVER_LOGGING_FOLDER", "/home/bitnami/stats/log/");
+define("LINODE_SERVER_LOGGING_FOLDER", "/var/www/html/setistats.seti.nl/status_logs/");
+define("AMAZON_SERVER_LOGGING_FOLDER", "/home/bitnami/stats/log/");
 define("DEBUG_LOGGING_FOLDER", "/WebServer/UniServerZSeti/www/stats/log/");
-define("WEB_SERVER_DATA_FOLDER", "/home/bitnami/stats/data/");
+
+define("LINODE_SERVER_DATA_FOLDER", "/var/www/html/setistats.seti.nl/data/");
+define("AMAZON_SERVER_DATA_FOLDER", "/home/bitnami/stats/data/");
 define("DEBUG_DATA_FOLDER", "/WebServer/UniServerZSeti/www/data/");
-define("WEB_SERVER_BACKUP_FOLDER", "/home/bitnami/stats/backup/");
-define("DEBUG_BACKUP_FOLDER", "/WebServer/UniServerZSeti/www/stats/backup/");
+
 
 define("FILE_ERROR_LOG", "error");
 
@@ -352,36 +387,30 @@ function FilePermission($file)
 
 function DataFolder($file)
 {
-	$hostname = gethostname();
-	if (strpos($hostname, WEB_SERVER) === false)
-	{
-		return DEBUG_DATA_FOLDER.$file;	
-	}
-
-	return WEB_SERVER_DATA_FOLDER.$file;
+    $whatServer = IsWhatServer();
+    if ($whatServer == SERVER_ID_LINODE)
+    {
+        return LINODE_SERVER_DATA_FOLDER.$file;
+    }
+     if ($whatServer == SERVER_ID_AMAZON)
+    {
+        return AMAZON_SERVER_DATA_FOLDER.$file;
+    }    
+    return DEBUG_DATA_FOLDER.$file;        
 }
-
-function BackupFolder($file)
-{
- 	$hostname = gethostname();
-	if (strpos($hostname, WEB_SERVER) === false)
-	{
-		return DEBUG_BACKUP_FOLDER.$file;	
-	}
-
-	return WEB_SERVER_BACKUP_FOLDER.$file;   
-}
-
 
 function LoggingFolder($file)
 {
-	$hostname = gethostname();
-	if (strpos($hostname, WEB_SERVER) === false)
-	{
-		return DEBUG_LOGGING_FOLDER.$file;	
-	}
-
-	return WEB_SERVER_LOGGING_FOLDER.$file;
+    $whatServer = IsWhatServer();
+    if ($whatServer == SERVER_ID_LINODE)
+    {
+        return LINODE_SERVER_LOGGING_FOLDER.$file;
+    }
+     if ($whatServer == SERVER_ID_AMAZON)
+    {
+        return AMAZON_SERVER_LOGGING_FOLDER.$file;
+    }    
+    return DEBUG_LOGGING_FOLDER.$file;
 }
 
 function LoggingOpen($file_in)
@@ -395,8 +424,10 @@ function LoggingOpen($file_in)
 	$file_time = $file.$time->format("_Y-m-d").".log";
 	$gfp_logging = fopen($file_time, "ab");
 	$glogging_fullname = $file_time;
-
-//	echo $glogging_fullname;
+ 
+//        echo "<br> test test test <br>";
+//	echo "<br>".$glogging_fullname."<br>";
+//        var_dump($gfp_logging);
 	
 }
 

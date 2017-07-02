@@ -28,8 +28,27 @@ else
 {
     $server = "Server: Internet";
 }
-
 $statusText.= $server.$CRLF;
+
+$whatServer = IsWhatServer();
+if ($whatServer == SERVER_ID_DEBUG)
+{
+    $server = "WhatServer: Debug";  
+}
+if ($whatServer == SERVER_ID_LINODE)
+{
+    $server = "WhatServer: Linode";  
+}
+if ($whatServer == SERVER_ID_AMAZON)
+{
+    $server = "WhatServer: Amazon Lightsail";  
+}
+$statusText.= $server.$CRLF;
+
+$folder = DataFolder("");
+$statusText.= $folder.$CRLF;
+$folder = LoggingFolder("");
+$statusText.= $folder.$CRLF;
         
 $ds = disk_total_space("/");
 $df = disk_free_space("/");

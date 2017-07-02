@@ -17,7 +17,6 @@ require_once '../status.php';
 require_once '../download_gz.php';
 require_once '../create_table.php';
 require_once '../generate_stats.php';
-require_once '../backup.php';
 
 echo updateStats();
 

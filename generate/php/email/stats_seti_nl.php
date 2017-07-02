@@ -15,7 +15,7 @@ else
     {
         return true;
     } 
-    $from = "stats@seti.nl";
+    $from = "statsseti@efmer.eu";
 
     $array = GetPassWordEmail();
     

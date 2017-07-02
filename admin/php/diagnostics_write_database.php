@@ -96,33 +96,4 @@ function ConvertSize($size){
   return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
 }
 
-function connectSqlSetiD()
-{
-    $array = GetPassWordSqlReadWrite();
-    $sql_password_rw = $array["sql_password_rw"];
-    echo $sql_password_rw.'<br>';
-    if (IsDebugServer())
-	{
-		// test machine
-		$mysqli  = @new mysqli("localhost","setiatnl","TILpOIYCB0BSYDm2","__seti");
-		if ($mysqli ->connect_errno)	{
-			LoggingAddError("database error (connectSqlSeti) seti: " . $mysqli ->connect_errno);
-			return false;
-		}
-	}
-	else
-	{
-		// server
-                
-		$mysqli  = @new mysqli("localhost",$sql_password_rw,"__seti");
-		if ($mysqli ->connect_errno)	{
-			LoggingAddError("database error (connectSqlSeti read/write) seti: " . $mysqli ->connect_errno);
-			return false;
-		}	
-	}
-	return $mysqli ;
-}
-
-
-
 ?>

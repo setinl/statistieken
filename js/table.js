@@ -118,7 +118,7 @@ function UrlChange()
 	});
         
 	$( "#button_status" ).click(function() {
-            var win = window.open('http://stats.seti.nl/display/status.html', '_blank');
+            var win = window.open(g_siteUrl+'display/status.html', '_blank');
             return;
 	});        
         
