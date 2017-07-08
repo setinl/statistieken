@@ -15,6 +15,7 @@ else
     {
         return true;
     } 
+    
     $from = "statsseti@efmer.eu";
 
     $array = GetPassWordEmail();
@@ -26,9 +27,9 @@ else
             
     $subject = "Seti statistics";
     $body = "$message";
-    $context = "text/plain;charset=utf-8";
+    $context = "text/html;charset=utf-8";
     
-    $headers = array ('From' => $from, 'To' => $to,'Subject' => $subject, 'Content-Type' => $context);
+    $headers = array ('From' => $from, 'To' => $to,'Subject' => $subject, 'Content-Type' => $context, 'date' => date('r', time()));
     $smtp = Mail::factory('smtp',
     array ('host' => $host,
         'port' => $port,

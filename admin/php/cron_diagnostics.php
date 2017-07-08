@@ -5,7 +5,7 @@ require('../../php/passwords/pass_read.php');
 require '../../generate/php/passwords/pass.php';
 require '../../php/sql/sql_read.php';
 
-$CRLF = '\r\n';
+$CRLF = '<br>';
 
 $statusText = 'S@NL diagnostics'.$CRLF;
 $statusText.= 'Hostname: '.gethostname().$CRLF;
@@ -17,8 +17,6 @@ $currentPhp = "Current PHP version: ".phpversion();
 
 $statusText.= "-------------------------------------------------".$CRLF;
 
-//$status = strpos($hostname, WEB_SERVER); 
-//var_dump($status);
 
 if (IsDebugServer())
 {
@@ -66,6 +64,10 @@ if ($sql === false)
 }
  else
 {
+    $charset  = "Initial character set: ".$sql->character_set_name();
+    LoggingAdd($charset, true); 
+    $statusText .= $charset.$CRLF;
+    
     $table = SQL_TABLE_USERS;
     $id = '8906489';
     $command = "SELECT ".SQL_USER_NAME.",".SQL_TOTAL_CREDIT.",".SQL_RAC.",".SQL_RANK_CREDIT.",".SQL_RANK_RAC." FROM ".SQL_TABLE_LIST_SNL_TEAM." WHERE ".SQL_ID."='$id' LIMIT 1";
@@ -108,9 +110,9 @@ LoggingClose();
 
 $statusText .= 'END of diagnostics'.$CRLF;
 
-$echoText = CrLfToBr($statusText);
+//$echoText = CrLfToBr($statusText);
 
-echo $echoText;
+echo $statusText;
 
 function ConvertSize($size){
   $base = log($size) / log(1024);

@@ -1,39 +1,65 @@
 LANGUAGE_ENGLISH = "US";
 LANGUAGE_DUTCH = "NL";
 
-g_language = LANGUAGE_ENGLISH;
+var g_language;
+
 
 function language()
 {
+    var flag;
+    
+    g_language = readLanguage(LANGUAGE_ENGLISH);
+    
 	switch(g_language) 
 	{
-		case LANGUAGE_ENGLISH:
-			languageEnglish();
-		break;
-		case LANGUAGE_DUTCH:
-			languageDutch();
-		break;		
-	}	
+            case LANGUAGE_DUTCH:
+		languageDutch();
+                flag =  "<img src='js/lib/flags/blank.png' class='flag flag-nl '/>"                   
+            break;
+            default:            		
+		languageEnglish();
+                flag =  "<img src='js/lib/flags/blank.png' class='flag flag-us '/>"                     
+            break;
+	}
+        $( "#flag_selected_language" ).html(flag);	        
+}
+
+function languageToggle()
+{
+    if (g_language == LANGUAGE_ENGLISH)
+    {
+        storeLanguage(LANGUAGE_DUTCH);
+    }
+    else
+    {
+        storeLanguage(LANGUAGE_ENGLISH);
+    }
+    location.reload();
 }
 
 function languageEnglish()
 {
-	table_team_rac = "Team RAC";
-	table_team_total = "Team Total";
+    table_team_rac = "Team RAC";
+    table_team_total = "Team Total";
 
-	table_name = "Name";
-	table_total = "Total";	
-	table_rac = "RAC";
-	table_country = "Country";
-	table_members = "Members";	
+    table_name = "Name";
+    table_total = "Total";	
+    table_rac = "RAC";
+    table_country = "Country";
+    table_members = "Members";	
 	
     table_country_rac = "Country RAC";
     table_country_total	= "Country Total";
+    
     table_world_rac = "World RAC";
     table_world_total = "World Total";
-	table_team = "Team";
+    overtake = "Overtake";   
+    table_team = "Team";
 	
-	table_lang_file = "";
+    table_lang_file = "";
+    
+    text_credits = "Credits";
+    text_credits_future = "Credits in the future";   
 	
 //	check_hide_table = "Hide table";
 	
@@ -97,6 +123,7 @@ function languageDutch()
 {
 	table_team_rac = "Team RAC";
 	table_team_total = "Team Totaal";	
+        overtake = "Inhalen";        
 
 	table_name = "Naam";
 	table_total = "Totaal";	
@@ -105,18 +132,21 @@ function languageDutch()
 	table_members = "Leden";
 	
     table_country_rac = "L RAC";
-    table_country_total	= "L Total";
+    table_country_total	= "L Totaal";
     table_world_rac = "W RAC";
-    table_world_total = "W Total";
+    table_world_total = "W Totaal";
 	table_team = "Team";	
 	
-	table_lang_file = "/stats/js/lib/data_tables/lang/nl.txt";	
+    table_lang_file = "js/lib/data_tables/lang/nl.txt";	
+    
+    text_credits = "Punten";
+    text_credits_future = "Punten in de toekomst";      
 	
 //	check_hide_table = "Verberg tabel";	
 	
 	text_solid_line = "Doorgetrokken lijn: ";
-	text_dash_line = "Dashed lijn: ";
-	text_cedit_future = "Credits in de toekomst ";
+	text_dash_line = "Gestreepte lijn: ";
+	text_cedit_future = "Punten in de toekomst ";
 	text_tool_users = "Toon gebruikers lijst";
 	text_one_team = "Team: ";	
 	text_all_teams = "Alle teams";
@@ -157,8 +187,8 @@ function languageDutch()
 	txt_stat_post = "Nog te doen:";
 	txt_stat_busy = "Nu bezig met:";
 
-	txt_update_status1 = "Onderstaande info wordt over";
-	txt_update_stauts2 = "seconden ververst";
+	txt_update_status1 = "Onderstaande info wordt over ";
+	txt_update_stauts2 = " seconden ververst";
 	txt_update_now = "Ververs ...";	
 	txt_todo_gen_lists = "Genereer nieuwe lijsten";	
 	txt_progress_snl = "Lijst S@NL wordt gemaakt";

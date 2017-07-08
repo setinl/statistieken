@@ -12,7 +12,7 @@ function listAllTeams($sql)
 	sqlEmptyTable($sql, SQL_TABLE_LIST_SNL_TEAM_TEMP);
 	activeTeamMembersCreateList($sql);
 
-	set_time_limit(3600);	// 60 minutes
+	set_time_limit(7200);	// 120 minutes
 	$table_name = SQL_TABLE_LIST_ALL_TEAMS;
 	
 	$url_time = readStatus($sql ,SQL_USER_URL_FILE_TIME);

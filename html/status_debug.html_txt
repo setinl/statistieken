@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <head>
+
+	<link rel="stylesheet" type="text/css" href="css/stats.css">  
+
 <style>
 .ss_table table, td, th {
     border: 0px gray;
@@ -26,10 +29,35 @@
 	width: 400px;	
 }
 
-
 </style>
 
 </head>
+
+<div class="pageHeader">
+    <img src="img/molen-wieken-draaiend.gif" alt="Windmill" style="float:left;width:80px;height:80px;" > 
+    <div class="PageHeaderText"> SETI@Netherlands </div>
+    <div class="PageHeaderTextSub">Denk je dat wij alleen zijn? Zoek mee naar buitenaards leven.</div>
+</div> 
+
+<div class="pageStyle">
+   
+<table>
+	<tbody>
+		<tr>
+			<th width="140px"></th>
+			<th width="140px"></th>
+			<th width="140px"></th>
+			<th width="180px"></th>			
+                        <th width="140px"></th>	
+                        <th width="140px"></th>	
+		</tr>
+		<tr>
+                        <td><button class="cssbuttons" id="button_home">Home</button></td>                    
+		</tr>		
+	</tbody>
+</table>	
+
+</div>
 
 <table id="table_status_zero" class="ss_table">
 	<tbody>
@@ -181,16 +209,14 @@
 		</tr>		
 	</tbody>
 </table>
-		
 
-<!-- DO NOT COPY THIS PART, the path is not correct -->
-	<script type="text/javascript" src="../js/lib/jquery-3.2.1.min.js"></script>
-	<script type="text/javascript" src="../js/language.js"></script>
-	<script type="text/javascript" src="../js/url.js"></script>	
-	<script type="text/javascript" src="../js/status.js"></script>	
-	<script type="text/javascript" src="../js/database_status.js"></script>
-	<script type="text/javascript" src="../js/php_interface.js"></script>	
-	
-<!-- ============================================== -->		
-	
-</body>
+		
+	<script src="js/lib/jquery-3.2.1.min.js"></script>
+        <script src="js/common.js?js_time_stamp"></script>        
+        <script src="js/local_storage.js?js_time_stamp"></script>        
+	<script src="js/language.js?js_time_stamp"></script>
+	<script src="js/url.js?js_time_stamp"></script>	
+	<script src="js/status.js?js_time_stamp"></script>	
+	<script src="js/database_status.js?js_time_stamp"></script>
+	<script src="js/php_interface.js?js_time_stamp"></script>
+		

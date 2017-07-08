@@ -41,6 +41,9 @@ Graph.prototype.AskDataRac = function(id, seti_name)
 		case TABLE_USER:
 			action = ACTION_READ_RAC_USER;	
 		break;
+		case TABLE_USERS_ALL:
+			action = ACTION_READ_RAC_USER;	
+		break;                
 	}
 
 	var time = "0";	
@@ -214,7 +217,7 @@ Graph.prototype.AskDataCredit = function(id, seti_name, tm)
 
 	var action;
 
-	if (this.m_table_type === TABLE_USER)
+	if ((this.m_table_type === TABLE_USER) || (this.m_table_type === TABLE_USERS_ALL))
 	{
 		if (tm === 1) action = ACTION_READ_CREDIT_USER_TM;
 		else action = ACTION_READ_CREDIT_USER;

@@ -23,12 +23,16 @@ function GetCredit($sql, $sqlStats, $id, $table, $table_data)
 		return (json_encode($json_status));	
 	}
 	$row_cnt = $result->num_rows;
+        
+        $sendout = '';
+        $sendout = 'ID: '.$id. 'Table: '.SQL_DATA_TABLE.'table: '.$table;
+        
 	if ($row_cnt > 0)
 	{	
 		$row = mysqli_fetch_array($result);
 		if ($row == false)
 		{
-			$json_status = array('error', 'query_result 2');
+			$json_status = array('error', 'query_result 2'.$sendout);
 			return (json_encode($json_status));	
 		}
 		$data_table = $row[SQL_DATA_TABLE];
@@ -37,7 +41,7 @@ function GetCredit($sql, $sqlStats, $id, $table, $table_data)
 	
 	if ($data_table < 0)
 	{
-		$json_status = array('error', 'query_result');
+		$json_status = array('error', 'query_result 3'.$sendout);
 		return (json_encode($json_status));		
 	}	
 	
@@ -47,7 +51,7 @@ function GetCredit($sql, $sqlStats, $id, $table, $table_data)
 	if ($result === FALSE)
 	{
 		mysqli_close($sqlStats);		
-		$json_status = array('error', 'query_result');			
+		$json_status = array('error', 'query_result 4');			
 		return (json_encode($json_status));	
 	}
 	$row_cnt = $result->num_rows;
@@ -97,6 +101,7 @@ function GetCredit($sql, $sqlStats, $id, $table, $table_data)
 	}
 }
 
+// time machine
 function GetCreditTm($sql, $sqlStats, $id, $table, $table_data)
 {
 	$sqlCommand = "SELECT ".SQL_TIME_STATS.",".SQL_TOTAL_CREDIT.",".SQL_RAC." FROM ".$table." WHERE ".SQL_ID."='$id' LIMIT 1";	// get right graph table

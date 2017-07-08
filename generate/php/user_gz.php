@@ -20,11 +20,7 @@ function userGzReadAndProcess($sql,$url_gz, $file_local, &$stats_added)
 			
 				$status = userGzProcess($sql,$file_local, $timestamp_url);
 				if ($status == STATUS_OK)
-				{
-			//		$sql_stats = connectSqlSetiStats();
-			//		userStatsAdd($sql, $sql_stats, $timestamp_url);	
-			//		mysqli_close($sql_stats);					
-					
+				{					
 					$sql_stats	= connectSqlSetiStatsC();
 					if ($sql_stats === false)
 					{
@@ -151,8 +147,15 @@ function userGzExtract($sql,$block, $timestamp_url)
 	}
 	$data_id = xmlExtract($block, XML_ID, XML_ID_END, FALSE);
 	$team = xmlExtract($block, XML_TEAM_ID, XML_TEAM_ID_END, FALSE);
+        $team = intval($team);
 	$data_name = xmlExtract($block, XML_NAME, XML_NAME_END, FALSE);
-	$data_name = $sql->real_escape_string($data_name);		
+	$data_name = $sql->real_escape_string($data_name);
+        if (strlen($data_name) >= SQL_TINYTEXT_LENGTH)
+        {
+            $data_name = substr($data_name,0,SQL_TINYTEXT_LENGTH);
+        }         
+        
+        
 	$data_country = xmlExtract($block, XML_COUNTRY, XML_COUNTRY_END, FALSE);
 	$data_credit = round(xmlExtract($block, XML_TOTAL_CREDIT, XML_TOTAL_CREDIT_END, FALSE),2);
 	$data_rac = round(xmlExtract($block, XML_RAC, XML_RAC_END, FALSE),3);
@@ -180,10 +183,10 @@ function userGzExtract($sql,$block, $timestamp_url)
 				$sqlCommand = "UPDATE users SET ".SQL_USER_TEAM."='$team',".SQL_USER_NAME."='$data_name', ".SQL_COUNTRY."='$country', ".SQL_TOTAL_CREDIT."='$data_credit',".SQL_RAC."='$data_rac',".SQL_ACTIVE."='$data_active' WHERE ".SQL_ID."='$data_id' LIMIT 1";	// don't update time_last timestamp_url
 			}
 			
-			$result = $sql->query($sqlCommand);	LoadBallance();
+			$result = $sql->query($sqlCommand);LoadBallance();
 			if (!$result)
 			{
-				LoggingAddError("userGzExtract 2: " . mysqli_error($sql));
+				LoggingAddError("userGzExtract 2: " . mysqli_error($sql)."ID: ".$data_id);
 				return ERR_DATABASE;
 			}
 		}

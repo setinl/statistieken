@@ -27,18 +27,19 @@ function listSnlTeam($sql)
 		{
 			LoggingAddError("(listSnlTeam): set use to -1 ".mysqli_error($sql));
 			return ERR_DATABASE;	
-		}		
+		}	             
 		if (listSnlTeamBuild($sql, $table_name, $url_time) == STATUS_OK)
 		{
 			if (listSnlTeamRac($sql, $table_name, SQL_RAC, SQL_RANK_RAC) == true)
-			{
+                        {
 				if (listSnlTeamRac($sql, $table_name, SQL_TOTAL_CREDIT, SQL_RANK_CREDIT) == true)
-				{
-				
+				{                   
+                                    listSnlTeamOvertake($sql, $table_name);
 				}
 			}
 		}
 		
+                LoggingAdd("(listSnlTeam) Start listSnlTeamCleanup",TRUE); 
 		listSnlTeamCleanup($sql);
 		
 		$timeStop = new DateTime("now"); 
@@ -55,6 +56,7 @@ function listSnlTeam($sql)
 
 function listSnlTeamBuild($sql, $table_name, $url_time)
 {
+        LoggingAdd("(listSnlTeam) Start listSnlTeamBuild",TRUE);   
 	$b_fetch_next = TRUE;
 	$i_start = 0;
 	$team = SNL_TEAM_ID;
@@ -101,7 +103,7 @@ function listSnlTeamInsertOrUpdate($sql, $table_name, $row, $url_time)
 	$credit = round($row[SQL_TOTAL_CREDIT]);
 	$rac = round($row[SQL_RAC],2);
 	$time_stamp = $url_time;
-	if ($credit > 100 || $rac > 2)
+	if ($credit > 10 || $rac > 1)
 	{
 		$sqlCommand = "SELECT ".SQL_LIST_TIME.",".SQL_TOTAL_CREDIT.",".SQL_RAC." FROM ".$table_name." WHERE ".SQL_ID."='$id' LIMIT 1";
 		$result_check_there = $sql->query($sqlCommand);LoadBallance();
@@ -147,7 +149,7 @@ function listSnlTeamInsertOrUpdate($sql, $table_name, $row, $url_time)
 		else
 		{
 			// not found, insert
-			$sqlCommand = "INSERT INTO ".$table_name." (".SQL_ID.",".SQL_LIST_TIME.",".SQL_USER_NAME.",".SQL_COUNTRY.",".SQL_TOTAL_CREDIT.",".SQL_RAC.",".SQL_LIST_USED.") VALUES ('$id', '$time_stamp', '$user_name', '$country', '$credit', '$rac', 2)";
+			$sqlCommand = "INSERT INTO ".$table_name." (".SQL_ID.",".SQL_LIST_TIME.",".SQL_USER_NAME.",".SQL_COUNTRY.",".SQL_TOTAL_CREDIT.",".SQL_OVERTAKE.",".SQL_RAC.",".SQL_LIST_USED.") VALUES ('$id', '$time_stamp', '$user_name', '$country', '$credit', '', '$rac', 2)";
 			$resultInsert = $sql->query($sqlCommand);LoadBallance();
 			if ($resultInsert === FALSE)
 			{
@@ -164,42 +166,131 @@ function listSnlTeamInsertOrUpdate($sql, $table_name, $row, $url_time)
 
 function listSnlTeamRac($sql, $table_name, $order, $item)
 {
+        LoggingAdd("(listSnlTeam) Start listSnlTeamRac",TRUE);    
 	$b_fetch_next = TRUE;
-	$i_start = 0;
 	$i_rank = 1;
-	while($b_fetch_next)
-	{	
-		$result = $sql->query("SELECT ".SQL_ID." FROM ".$table_name." ORDER BY ".$order." DESC LIMIT $i_start, 100");LoadBallance();
-		if ($result === FALSE)
+
+        $result = $sql->query("SELECT ".SQL_ID." FROM ".$table_name." ORDER BY ".$order." DESC");LoadBallance();
+	if ($result === FALSE)
+	{
+		LoggingAddError("listSnlTeamRac 1: ".mysqli_error($sql));
+		return false;	
+	}
+	$row_cnt = $result->num_rows;
+	if ($row_cnt > 0)
+	{
+		while($row = mysqli_fetch_array($result))
 		{
-			LoggingAddError("listSnlTeamRac 1: ".mysqli_error($sql));
-			return false;	
-		}
-		$row_cnt = $result->num_rows;
-		if ($row_cnt > 0)
-		{
-			while($row = mysqli_fetch_array($result))
+			$id = $row[SQL_ID];			
+			$result_update = $sql->query( "UPDATE ".$table_name." SET ".$item."=".$i_rank." WHERE ".SQL_ID."='$id' LIMIT 1");LoadBallance();
+			if ($result_update === FALSE)
 			{
-				$id = $row[SQL_ID];			
-				$result_update = $sql->query( "UPDATE ".$table_name." SET ".$item."='$i_rank' WHERE ".SQL_ID."='$id' LIMIT 1");LoadBallance();
-				if ($result_update === FALSE)
-				{
-					LoggingAddError("listSnlTeamRac 2: ".mysqli_error($sql));
-					return false;	
-				}
-				$i_rank++;				
+				LoggingAddError("listSnlTeamRac 2: ".mysqli_error($sql));
+				return false;	
 			}
-			$result->close();
+			$i_rank++;				
 		}
-		else
+		$result->close();
+	}
+	return true;
+}
+
+function listSnlTeamOvertake($sql, $table_name)
+{
+        LoggingAdd("(listSnlTeam) Start listSnlTeamOvertake",TRUE);        
+	$b_fetch_next = TRUE;
+	$i_rank = 1;
+        
+        $order = SQL_TOTAL_CREDIT;
+        $item = SQL_RANK_RAC;
+        $total_credit_prev = -1;
+        $rac_prev = 0;
+        $days = 0;
+        
+	$result = $sql->query("SELECT ".SQL_ID.",".SQL_TOTAL_CREDIT.",".SQL_RAC." FROM ".$table_name." ORDER BY ".$order." DESC ");LoadBallance();
+	if ($result === FALSE)
+	{
+		LoggingAddError("listSnlTeamOvertake 1: ".mysqli_error($sql));
+		return false;	
+	}
+	$row_cnt = $result->num_rows;
+	if ($row_cnt > 0)
+	{
+		while($row = mysqli_fetch_array($result))
 		{
-			// empty
-			$b_fetch_next = FALSE;
-		}		
-		$i_start = $i_start + 100;
+                    $overtake = '';
+                    $id = $row[SQL_ID];
+                    $total_credit = $row[SQL_TOTAL_CREDIT];
+                    $rac = $row[SQL_RAC];
+                    if ($total_credit_prev >= 0)
+                    {
+                        $diff_credit = $total_credit_prev - $total_credit;
+                        $rac_dif = $rac - $rac_prev;
+                        if ($rac_dif > 0)   // overtaking
+                        {
+                            $days = $diff_credit / $rac_dif;
+                            $overtake = overtakeValue($days);
+                        }
+                    }
+                                                     
+                    $total_credit_prev = $total_credit;
+                    $rac_prev = $rac;                            
+                    $result_update = $sql->query( "UPDATE ".$table_name." SET ".SQL_OVERTAKE."='$overtake' WHERE ".SQL_ID."='$id' LIMIT 1");LoadBallance();
+                    if ($result_update === FALSE)
+                    {
+                      	LoggingAddError("listSnlTeamOvertake 2: ".mysqli_error($sql));
+			return false;	
+                    }		
+		}
+		$result->close();		
 	
 	}
 	return true;
+}
+
+function overtakeValue($days)
+{
+    $years = $days/365;
+    $years_int = 0;
+    $months_int = 0;
+    $overtake = '';
+    if ($years > 50)
+    {
+        return ''; 
+    }
+    
+    if ($years >= 1)
+    {
+        $years_int = intval($years);
+        $days -= $years_int*365;
+        $months = $years - $years_int;
+        $months*= 12;
+        $months_int = intval($months);
+        $days -= $months_int * 30;        
+    }
+    if ($days > 30)
+    {
+        $months = $days / 30;
+        $months+= $months_int;
+        $months_int = intval($months);
+        $days -= $months_int * 30;         
+    }
+    
+    $days_int = intval($days);
+    if ($years_int > 0)
+    {
+        $overtake = $years_int . 'y ';
+    }                                    
+    if ($months_int > 0)
+    {
+        $overtake = $overtake.$months_int . 'm ';
+    }                                    
+    if ($days_int > 0) 
+    {
+        $overtake = $overtake.$days_int.'d';
+    }   
+ 
+    return $overtake;
 }
 
 function listSnlTeamCleanup($sql)

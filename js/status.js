@@ -3,9 +3,15 @@ $(document).ready(function()
 	language();	
 	getSiteUrl();
 	
+        $( "#button_home" ).click(function()
+	{
+		location.href="index.php";
+	}); 
+        
+        
 	if (g_siteUrl === "")
 	{
-		$('#text_status_error').html("(statsManuelly) g_siteUrl not found");
+		$('#text_status_error').html("g_siteUrl not found");
 	}
 
 	$('#table_status_zero th').eq(1).html(txt_stat_head_zero);

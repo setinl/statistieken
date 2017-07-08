@@ -27,11 +27,12 @@ $primaryKey = 'id';
 $columns = array(
 	array( 'db' => 'id', 'dt' => 0 ),    
 	array( 'db' => 'name', 'dt' => 1 ),
-	array( 'db' => 'total_credit', 'dt' => 2 ),
+	array( 'db' => 'total_credit', 'dt' => 2 ),  
 	array( 'db' => 'rac', 'dt' => 3 ),
 	array( 'db' => 'rank_rac', 'dt' => 4 ),
  	array( 'db' => 'rank_credit', 'dt' => 5 ),
-   	array( 'db' => 'country', 'dt' => 6 )
+	array( 'db' => 'overtake', 'dt' => 6 ),      
+   	array( 'db' => 'country', 'dt' => 7 )
 );
 
 // SQL server connection information

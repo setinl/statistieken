@@ -217,6 +217,7 @@ function sqlCreateTableListSnlTeam($sql, $name)
 			".SQL_USER_NAME." tinytext,
 			".SQL_COUNTRY." tinytext,
 			".SQL_TOTAL_CREDIT." bigint,
+			".SQL_OVERTAKE." tinytext,
 			".SQL_RAC." DOUBLE,
 			".SQL_RANK_RAC. " int default 0,
 			".SQL_RANK_CREDIT. " int default 0,
@@ -268,7 +269,7 @@ function sqlCreateTableListUsers($sql, $name)
 		$result = $sql->query($sql_command);
 		if ($result === FALSE)
 		{
-			LoggingAddError("sqlCreateTableListSnlTeam: ".mysqli_error($sql));
+			LoggingAddError("sqlCreateTableListUsers: ".mysqli_error($sql));
 			return FALSE;
 		}
 	}

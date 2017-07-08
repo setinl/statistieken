@@ -32,7 +32,8 @@ $columns = array(
 	array( 'db' => 'rac', 'dt' => 3 ),
 	array( 'db' => 'rank_rac', 'dt' => 4 ),
  	array( 'db' => 'rank_credit', 'dt' => 5 ),
-   	array( 'db' => 'country', 'dt' => 6 )
+   	array( 'db' => 'country', 'dt' => 6 ),          // dummy for the invisible overtake column
+   	array( 'db' => 'country', 'dt' => 7 )    
 );
 
 // SQL server connection information

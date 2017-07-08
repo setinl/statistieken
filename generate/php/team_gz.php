@@ -141,7 +141,11 @@ function teamGzExtract($sql,$block, $timestamp_url)
 	$data_type = xmlExtract($block, XML_T_TYPE, XML_T_TYPE_END, FALSE);
 	$data_name = xmlExtract($block, XML_T_NAME, XML_T_NAME_END, FALSE);	
 	$data_name = $sql->real_escape_string($data_name);
-	
+        if (strlen($data_name) >= SQL_TINYTEXT_LENGTH)
+        {
+            $data_name = substr($data_name,0,SQL_TINYTEXT_LENGTH);
+        }        
+        
 	$data_user_id = xmlExtract($block, XML_T_USER_ID, XML_T_USER_ID_END, FALSE);
 	
 	$data_credit = round(xmlExtract($block, XML_T_CREDIT, XML_T_CREDIT_END, FALSE),2);
@@ -149,9 +153,20 @@ function teamGzExtract($sql,$block, $timestamp_url)
 	$data_url = xmlExtract($block, XML_T_URL, XML_T_URL_END, FALSE);
 	$data_url = $sql->real_escape_string($data_url);
 	$data_name_html = xmlExtract($block, XML_T_NAME_HTLM, XML_T_NAME_HTML_END, FALSE);
-	$data_name_html = $sql->real_escape_string($data_name_html);
+        $data_name_html = "";   // can contain illegal chars even after escaping and we don't use this anyway.
+//	$data_name_html = $sql->real_escape_string($data_name_html);
+//        if (strlen($data_name_html) >= SQL_TINYTEXT_LENGTH)
+//        {
+//            $data_name_html = substr($data_name_html,0,SQL_TINYTEXT_LENGTH);
+//        }      
 	$data_descr = xmlExtract($block, XML_T_DESCR, XML_T_DESCR_END, FALSE);
-	$data_descr = $sql->real_escape_string($data_descr);
+        $data_descr = "";   // can contain illegal chars even after escaping and we don't use this anyway.        
+//	$data_descr = $sql->real_escape_string($data_descr);
+//        if (strlen($data_descr) >= SQL_TINYTEXT_LENGTH)
+//        {
+//            $data_descr = substr($data_descr,0,SQL_TINYTEXT_LENGTH);
+//        }         
+        
 	$data_country = xmlExtract($block, XML_T_COUNTRY, XML_T_COUNTRY_END, FALSE);
 	$country = CountryShortString($data_country);
 	
@@ -167,7 +182,7 @@ function teamGzExtract($sql,$block, $timestamp_url)
 			$result = $sql->query($sqlCommand);	LoadBallance();
 			if (!$result)
 			{
-				LoggingAddError("teamGzExtract 2: " . mysqli_error($sql));
+				LoggingAddError("teamGzExtract 2: " . mysqli_error($sql)."ID: ".$data_user_id);
 				return ERR_DATABASE;
 			}
 			$action = "Update, ";			

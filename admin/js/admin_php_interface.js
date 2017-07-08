@@ -1,6 +1,6 @@
 function phpAdminSendData(data, callback, timeout)
 {
-	var url = g_siteUrl + "/stats/admin/php/admin_interface.php";
+	var url = g_siteUrl + "/admin/php/admin_interface.php";
 
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function()

@@ -1,27 +1,52 @@
 //ACTION_READ_TABLE_TEAM_SNL = 100;
 
-TABLE_USER = "USER";
-TABLE_TEAMS_ALL = "TEAM_ALL";
-TABLE_USERS_ALL = "USERS_ALL";
-TABLE_COUNTRIES_ALL = "COUNTRIES_ALL";
-TABLE_COUNTRY = "COUNTRY";
+var CLASS_SELECTED = 'selected';
 
-PARA_TEAM = "team";
-PARA_TEAMS_ALL = "all_teams";
-PARA_USERS_ALL = "all_users";
-PARA_COUNTRIES_ALL = "all_countries";
-PARA_COUNTRY = "country";
+var TABLE_USER = "USER";
+var TABLE_TEAMS_ALL = "TEAM_ALL";
+var TABLE_USERS_ALL = "USERS_ALL";
+var TABLE_COUNTRIES_ALL = "COUNTRIES_ALL";
+var TABLE_COUNTRY = "COUNTRY";
 
-COLUMN_TEAM = 0;
-COLUMN_ALL_TEAM = 1;
-COLUMN_COUNTRY = 2;
+var SORTING_TABLE_TEAM = 0;
+var SORTING_TABLE_USER = 1;
+var SORTING_TABLE_USER_ALL = 2;
+var SORTING_TABLE_COUNTRIES_ALL = 3;
+var SORTING_TABLE_COUNTRIES = 4;
+
+var PARA_TEAM = "team";
+var PARA_TEAM_NAME = "team_name";
+var PARA_TEAMS_ALL = "all_teams";
+var PARA_USERS_ALL = "all_users";
+var PARA_COUNTRIES_ALL = "all_countries";
+var PARA_COUNTRY = "country";
+
+var PARA_PAGE_LENGTH = "page_len";
+var PARA_PAGE_NR = "page_nr";
+    
+var PARA_SELECT = "sel";
+
+var PARA_ORDER = "ord_col";
+var PARA_ORDER_DIR = "ord_dir";
+
+    
+var COLUMN_TEAM = 0;
+var COLUMN_ALL_TEAM = 1;
+var COLUMN_COUNTRY = 2;
+var COLUMN_USER  = 3;
+
+var TEAM_SNL = "30190";
 
 var g_siteUrl;
 var g_hide_table = false;
 
-var selected = [];
+var g_selected = [];
 var g_table;
 
+var g_order = -1;
+var g_order_dir = "";
+
+var g_initSorting = true;
 
 var g_table_interval_timer = null;
 var g_current_table = null;
@@ -30,6 +55,10 @@ var g_team_id;
 var g_team_name;
 var g_team_same = false;
 var g_table_type = TABLE_TEAMS_ALL;
+var g_page_length = 10;
+
+var g_page_nr = null;
+var g_page_nr_type = TABLE_TEAMS_ALL;
 
 var g_location_base = "";
 
@@ -96,36 +125,56 @@ function UrlChange()
  //            $(this).closest('tr').removeClass('selected');
         }
     });  
-  
+    
+    
+  	$( "#button_language" ).click(function()
+	{
+		languageToggle();
+//		return;
+	});    
 	$( "#button_all_teams" ).click(function()
 	{
-		addParameter(PARA_TEAMS_ALL,"","");
-		return;
+            if (g_table_type == TABLE_TEAMS_ALL) return;               
+            g_table_type = TABLE_TEAMS_ALL;
+            g_page_nr = null;
+            removeSelected();
+            setParameters()
+            UrlChange();
+ //           return;
 	}); 
 	$( "#button_all_users" ).click(function()
 	{
-        	addParameter(PARA_USERS_ALL,"","");
-		return;
+            if (g_table_type == TABLE_USERS_ALL) return;
+            g_table_type = TABLE_USERS_ALL;
+            g_page_nr = null;
+            removeSelected();
+            setParameters();
+            UrlChange();            
+ //           return;
 	}); 
 	$( "#button_all_countries" ).click(function() {
-		addParameter(PARA_COUNTRIES_ALL,"","");
-		return;
+            if (g_table_type == TABLE_COUNTRIES_ALL) return;
+            g_table_type = TABLE_COUNTRIES_ALL;
+            g_page_nr = null;
+            removeSelected();
+            setParameters();
+            UrlChange();            
+ //           return;
 	}); 	
 
 	$( "#button_info" ).click(function() {
-            showSelectedInfo();
-            return;
+            showSelectedInfo();            
+ //           return;
 	});
         
 	$( "#button_status" ).click(function() {
-            var win = window.open(g_siteUrl+'display/status.html', '_blank');
-            return;
+            window.open(g_siteUrl+'status.php', '_blank');
+ //           return;
 	});        
         
         
     
   
-//	$( "#text_hide_table" ).html(check_hide_table);
 	$( "#text_solid_line" ).html(text_solid_line);	
 	$( "#text_dash_line" ).html(text_dash_line);		
 	$( "#text_cedit_future" ).html(text_cedit_future);	
@@ -134,11 +183,16 @@ function UrlChange()
 	$( "#text_table_info" ).html(text_table_info);
 	$( "#text_table_status" ).html(text_table_status);        
 	$( "#text_all_countries" ).html(text_all_countries);		
-	
+
+   	$( "#text_credits" ).html(text_credits);
+	$( "#text_credits_future" ).html(text_credits_future);        
+    
+    
+    
 	getSiteUrl();
     
     $('#button').click( function () {
-        table.row('.selected').remove().draw( false );
+        table.row('.'+CLASS_SELECTED).remove().draw( false );
     } );    
     
 	hideTables();
@@ -154,60 +208,188 @@ function UrlChange()
 
 function getUrlData()
 {
+    // first # rest with &
 	var loc = decodeURIComponent(window.location.href);
         g_location_base = loc;
+        var len, para,data,i, sel, selstr, iPos;
+        var iTeam = 0;
+        var order = -1, order_dir = "";
         
-	if(loc.length > 0)
+        selstr = PARA_SELECT+'0=';
+        
+   	if(loc.length > 0)
 	{
-		var para = loc.split("#");
-		for (var i=1; i < para.length; i++)
+           para = loc.split("#");
+           if (para.length < 2) return; // no parameters
+           data = para[1].split("&");
+           len = data.length;
+           for (i=0; i < len; i++)
+           {
+               iPos = data[i].lastIndexOf(PARA_TEAM+'=');
+               if (iPos === 0)
+               {
+                   if (iTeam == 0)
+                   {
+                        g_team_id = data[i].substr(PARA_TEAM.length+1);
+                        g_table_type = TABLE_USER;
+                        iTeam++;
+                   }
+                   else
+                   {
+                       g_team_name = decodeURIComponent(data[i].substr(PARA_TEAM.length+1));    // older 2x team new team + team name
+                   }
+                }
+  		iPos = data[i].lastIndexOf(PARA_TEAM_NAME+'=');
+		if (iPos === 0)
 		{
-			var data = para[i];
-                        var data2 = data.split("&");
-                        if (data2.length == 2) {
-                            var iPos = data2[0].lastIndexOf(PARA_TEAM+'=');
-                            if (iPos === 0)
-                            {
-                                g_team_id = data2[0].substr(PARA_TEAM.length+1);
-                                g_table_type = TABLE_USER;
-                                if (data2)
-                                var iPos = data2[1].lastIndexOf(PARA_TEAM+'=');
-                                if (iPos === 0)
-                                {
-                                    g_team_name = data2[1].substr(PARA_TEAM.length+1);
-                                }
-                            }
-			}
-			var iPos = data.lastIndexOf(PARA_TEAMS_ALL);
-			if (iPos === 0)
-			{
-				g_team_id = data.substr(PARA_TEAM.length);
-				g_table_type = TABLE_TEAMS_ALL;
-			}			
-			var iPos = data.lastIndexOf(PARA_USERS_ALL);
-			if (iPos === 0)
-			{
-				g_team_id = data.substr(PARA_USERS_ALL.length);
-				g_table_type = TABLE_USERS_ALL;
-			}			
-			var iPos = data.lastIndexOf(PARA_COUNTRIES_ALL);
-			if (iPos === 0)
-			{
-				g_table_type = TABLE_COUNTRIES_ALL;
-			}				
-			var iPos = data.lastIndexOf(PARA_COUNTRY+'=');
-			if (iPos === 0)
-			{
-				g_country_id = data.substr(PARA_COUNTRY.length+1);
-				g_table_type = TABLE_COUNTRY;
-			}			
-		}
-	}
+                    g_team_name = decodeURIComponent(data[i].substr(PARA_TEAM_NAME.length+1));
+                }                 
+                iPos = data[i].lastIndexOf(PARA_TEAMS_ALL);
+		if (iPos === 0)
+		{
+                    g_team_id = data[i].substr(PARA_TEAM.length);
+                    g_table_type = TABLE_TEAMS_ALL;
+		}                
+		iPos = data[i].lastIndexOf(PARA_USERS_ALL);
+		if (iPos === 0)
+		{
+                    g_team_id = data[i].substr(PARA_USERS_ALL.length);
+                    g_table_type = TABLE_USERS_ALL;
+		}                
+		iPos = data[i].lastIndexOf(PARA_COUNTRIES_ALL);
+		if (iPos === 0)
+		{
+                    g_table_type = TABLE_COUNTRIES_ALL;
+		}             
+  		iPos = data[i].lastIndexOf(PARA_COUNTRY+'=');
+		if (iPos === 0)
+		{
+                    g_country_id = data[i].substr(PARA_COUNTRY.length+1);
+                    g_table_type = TABLE_COUNTRY;
+                } 
+  		iPos = data[i].lastIndexOf(PARA_PAGE_LENGTH+'=');
+		if (iPos === 0)
+		{
+                    g_page_length = data[i].substr(PARA_PAGE_LENGTH.length+1);
+                    setPageLength();
+                }
+  		iPos = data[i].lastIndexOf(PARA_PAGE_NR+'=');
+       		if (iPos === 0)
+		{
+                    g_page_nr = data[i].substr(PARA_PAGE_NR.length+1);
+                    setPageNr();
+                }
+    		iPos = data[i].lastIndexOf(PARA_ORDER+'=');
+       		if (iPos === 0)
+		{
+                    order = data[i].substr(PARA_ORDER.length+1);
+                    setPageNr();
+                }
+    		iPos = data[i].lastIndexOf(PARA_ORDER_DIR+'=');                
+       		if (iPos === 0)
+		{
+                    order_dir = data[i].substr(PARA_ORDER_DIR.length+1);
+                    setPageNr();
+                }                
+                
+                // selections last
+                iPos = data[i].lastIndexOf(selstr);            
+                if (iPos === 0)            
+                {
+                    g_selected.push(data[i].substr(selstr.length));
+                    for (sel=1;sel<len-i;sel++)
+                    {
+                        selstr = PARA_SELECT+sel+'=';
+                        iPos = data[i+sel].lastIndexOf(selstr);
+                        if (iPos === 0)
+                        {
+                            g_selected.push(data[i+sel].substr(selstr.length));
+                            var iii = 1;
+                        }
+                        else break;
+                    }
+                }
+           }
+        }
+        
+        if ((order.length > 0) && (order_dir.length >0))
+        {
+            if (order > 0)
+            {
+                g_order = order;
+                g_order_dir = order_dir;
+            }
+        }
+        else
+        {
+            g_order = -1;
+        }
 }
 
 
-function addParameter(paraAdd1, paraAdd2, paraAdd3)
-{
+function setParameters()
+{  
+    var queries = {};
+    var i, len, id, table, orderArray, orderArray2, order, orderDir;
+
+    switch(g_table_type)
+    {
+        case TABLE_USER:
+            queries[PARA_TEAM]=g_team_id;
+            queries[PARA_TEAM_NAME]=encodeURIComponent(g_team_name);
+        break;
+        case TABLE_USERS_ALL:
+            queries[PARA_USERS_ALL]='1';
+        break;        
+        case TABLE_COUNTRIES_ALL:
+            queries[PARA_COUNTRIES_ALL]='1';
+            id = PARA_COUNTRIES_ALL;
+        break;        
+        case TABLE_COUNTRY:
+            queries[PARA_COUNTRY]='1';
+        break;
+        default: 
+            queries[PARA_TEAMS_ALL]='1';        
+    }
+    
+    queries[PARA_PAGE_LENGTH]=g_page_length;
+
+    if (g_page_nr != null)
+    {
+        queries[PARA_PAGE_NR]=g_page_nr; 
+    }
+    
+    var len = g_selected.length;
+    for (i=0; i<len; i++)
+    {
+        sel = g_selected[i];
+        queries[PARA_SELECT+i] = sel;      
+    }
+    
+    id = getTypeId();
+    table = getTable(id);
+    if (!isUndefined(table))
+    {
+        orderArray = table.order();
+        if (orderArray.length > 0)
+        {
+            if (Array.isArray(orderArray[0]))
+            {
+                orderArray2 = orderArray[0];            
+                orderArray = orderArray2;
+            }
+            order = orderArray[0];        
+            orderDir = orderArray[1];
+            queries[PARA_ORDER] =  order;
+            queries[PARA_ORDER_DIR] = orderDir;
+        }
+    }
+    
+    
+    history.pushState({}, '', "#"+$.param(queries));
+    
+    
+  /*  
 	var loc_new = "";
 	var loc = window.location.href;
 	if(loc.length > 0)
@@ -229,13 +411,99 @@ function addParameter(paraAdd1, paraAdd2, paraAdd3)
 	window.location.href = loc_new;
         g_location_base = loc_new;
 	location.reload();
+*/        
 }
 
-function addParameterSelect(id)
+function getTypeId()
 {
-    var loc_new = "";
-    loc_new = g_location_base + "&sel=" + id;
-    window.location.href = loc_new;  
+   switch(g_table_type)
+    {
+        case TABLE_USER:
+            id = '#seti_table_user';
+        break;
+        case TABLE_USERS_ALL:
+            id = '#seti_table_users_all';
+        break;        
+        case TABLE_COUNTRIES_ALL:
+            id = '#seti_table_countries_all';
+        break;        
+        case TABLE_COUNTRY:
+            id = '#seti_table_country';
+        break;
+        default: 
+            id = '#seti_table_teams_all';
+  
+    }
+    return id;
+}
+
+function getTable(id)
+{
+    var table;
+
+    if ($.fn.DataTable.isDataTable(id) )
+    {   
+        table = $(id).DataTable();
+        return table;
+    }
+    return null;
+}
+
+function changedLength()
+{
+    removeSelected();    
+    setParameters();
+}
+
+function setPageLength()
+{
+   var id, table;
+   id = getTypeId();   
+   table = getTable(id);
+   if (table == null) return;
+    var info = table.page.info();
+    if (info.length != g_page_length)
+    {
+        table.page.len(g_page_length).draw();
+    }  
+}
+
+function setPageUrl(id)
+{
+    id = getTypeId();      
+    var table = getTable(id);
+    if (table !== null)
+    {
+        var info = table.page.info();
+        g_page_nr = info.page+1;
+    }
+    removeSelected();    
+    setParameters();    
+}
+
+function changedSorting(table,col,dir)
+{
+    if (g_initSorting){
+        g_initSorting = false;
+        return;
+    }  //skip the first one
+    
+    storeSorting(table,col,dir);
+    removeSelected();
+    setParameters();
+}
+
+function setPageNr()
+{
+    
+}
+
+function removeSelected()
+{
+    g_selected = [];    // empty selected array
+
+    var id = getTypeId();
+    $(id+ ' tbody tr').removeClass(CLASS_SELECTED);
 }
 
 function switchMode()
@@ -334,9 +602,10 @@ function captureTableSelections(item, table)
 	$(item_text).on('click', 'td', function ()
 	{
 		g_select_column = -1 ;
-		if ($(this).hasClass("at"))	g_select_column = COLUMN_ALL_TEAM;
-		if ($(this).hasClass("tm"))	g_select_column = COLUMN_TEAM;
-		if ($(this).hasClass("cm"))	g_select_column = COLUMN_COUNTRY;
+//		if ($(this).hasClass("at"))         g_select_column = COLUMN_ALL_TEAM;
+		if ($(this).hasClass("team"))       g_select_column = COLUMN_TEAM;
+//		if ($(this).hasClass("cm"))         g_select_column = COLUMN_COUNTRY;
+//		if ($(this).hasClass("user_all"))   g_select_column = COLUMN_USER
 	} );
 	
         $(item_text).on('click', 'tr', function ()
@@ -365,14 +634,14 @@ function captureTableSelections(item, table)
 			g_team_id = id;
 			g_team_name = name;
 			switchMode();
-			addParameter(PARA_TEAM, id, name);
+			setParameters();
 			return;
 		}
 		if (g_select_column === COLUMN_ALL_TEAM)
 		{
 			g_table_type = TABLE_TEAMS_ALL;
 			switchMode();	
-			addParameter(PARA_TEAMS_ALL,"", "");
+			setParameters();
 			return;
 		}
 		if (g_select_column === COLUMN_COUNTRY)
@@ -380,18 +649,25 @@ function captureTableSelections(item, table)
 			g_table_type = TABLE_COUNTRY;
 			g_country_id = id;
 			switchMode();	
-			addParameter(PARA_COUNTRY, id, '');
+			setParameters();
 			return;
 		}		
 		
-        var index = $.inArray(id, selected);
+        var index = $.inArray(id, g_selected);
  
-        if ( index === -1 ) selected.push( id );
-        else selected.splice( index, 1 );
+        if ( index === -1 )
+        {
+            g_selected.push( id );
+        }
+        else
+        {
+            g_selected.splice( index, 1 );
+        }
  
-        $(this).toggleClass('selected');
-
-		processGraph(id,name);
+        setParameters();
+ 
+        $(this).toggleClass(CLASS_SELECTED);
+        processGraph(id,name);
 	
     } ); 	
 }
@@ -600,6 +876,8 @@ function addFlags(country, row, i_cell)
 		break;		
 		case "NZ": flag = "flag-nz";
 		break;			
+               	case "PA": flag = "flag-pa";
+		break;	
 		case "PL": flag = "flag-pl";
 		break;		
 		case "PT": flag = "flag-pt";
@@ -637,7 +915,7 @@ function addFlags(country, row, i_cell)
 	}
 	if (flag !== "")
 	{
-            flags = country+"  <img src='../js/lib/flags/blank.png' class='flag "+ flag + "'/>";
+            flags = country+"  <img src='js/lib/flags/blank.png' class='flag "+ flag + "'/>";
 	}
 	$('td', row).eq(i_cell).html(flags);	// 5		
 }

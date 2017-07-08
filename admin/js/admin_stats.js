@@ -1,5 +1,6 @@
 
 ACTION_RESET_ERRRORS = 10;
+ACTION_RELOAD_LIST = 11;
 ACTION_FORCE_RELOAD = 15;
 ACTION_UPDATE_MANUALLY = 20;
 
@@ -22,6 +23,20 @@ function buttonResetErrors(token)
 	jsonString = "{" + jsonString;
 	phpAdminSendData(jsonString, statsResetReady, 5000);	// 5 seconds
 }
+
+function buttonRestartList()
+{
+	resetButtonStatus();
+	var id = "";
+	var time = "";
+        var token = "";        
+	var jsonString = '"action":"'+ ACTION_RELOAD_LIST + '", "id":"' + id + '","time":"' + time + '","token":"' + token + '"';		
+	
+	jsonString = jsonString + "}";
+	jsonString = "{" + jsonString;
+	phpAdminSendData(jsonString, restartListReady, 5000);	// 5 seconds
+}
+
 
 function statsResetReady(result)
 {
@@ -52,6 +67,33 @@ function statsResetReady(result)
 	else
 	{
 		printError(json_array[0], json_array[1], "#text_button_reset_errors");
+	}
+}
+
+function restartListReady(result)
+{
+	try{
+		var json_array = JSON.parse(result);
+    }catch(e){
+        return;	// error
+    }	
+	
+	if (json_array[0] === "status")
+	{
+		switch(json_array[1])
+		{
+			case "list_build_set_ok":
+				$('#text_button_manually_list').html("List set to build");
+			//	statsStatus();
+			break;			
+			default:
+				$('#text_button_manually_list').html(json_array[1]);
+			//	statsStatus();			
+		}
+	}
+	else
+	{
+		printError(json_array[0], json_array[1], "#text_button_manually_list");
 	}
 }
 

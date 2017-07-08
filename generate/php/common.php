@@ -18,19 +18,6 @@ function IsDebugServer()
     return false;
 }
 
-/*
-function IsDebugServer()
-{
-    $hostname = gethostname();
-    $status = strpos($hostname, WEB_SERVER); 
-    if ($status === false)
-    {
-        return true;
-    }
-    return false;
-}
- */
-
 function IsWhatServer()
 {
     $hostname = gethostname();
@@ -172,6 +159,7 @@ define("XML_RAC_END","</expavg_credit>");
 
 // SQL 
 
+define("SQL_TINYTEXT_LENGTH",254);
 
 define("SQL_REMOVE_LOGGING_COUNT","remove_logging_count");
 
@@ -210,12 +198,12 @@ define("SQL_ZERO_ERROR_COUNT", "error_count");
 define("SQL_ID","id");
 define("SQL_TEAM","team");
 
-
 define("SQL_TIME_DATA","time");
 define("SQL_USER_TEAM","team");
 define("SQL_USER_NAME","name");
 define("SQL_COUNTRY","country");
 define("SQL_TOTAL_CREDIT","total_credit");
+define("SQL_OVERTAKE","overtake");
 define("SQL_RAC","rac");
 define("SQL_RANK_RAC","rank_rac");
 define("SQL_RANK_CREDIT","rank_credit");
@@ -250,11 +238,9 @@ define("TABLE_DATA_MAX", 2000);
 define("SQL_TABLE_USER_DATA", "ud_");
 define("SQL_TABLE_TEAM_DATA", "td_");
 define("SQL_TABLE_LIST_SNL_TEAM", "list_snl_team");
-//define("SQL_TABLE_LIST_OTHER_TEAM", "list_other_team");
+define("SQL_TABLE_LIST_SNL_TEAM_TEMP", "list_snl_team_temp");
 
 define("SQL_TABLE_LIST_ALL_TEAMS", "list_all_teams");
-//define("SQL_TABLE_LIST_SNL_TEAM_NEW", "listSnlTeam_new");
-define("SQL_TABLE_LIST_SNL_TEAM_TEMP", "list_snl_team_temp");
 
 define("SQL_TABLE_LIST_ALL_USERS", "list_all_users");
 define("SQL_TABLE_LIST_ALL_USERS_TEMP", "list_all_users_temp");
@@ -272,8 +258,15 @@ $gfp_logging = NULL;
 $gfp_logging_append = NULL;
 
 $gi_load_ballance = 0;
-$glogging_fullname  = "";
+$gi_load_ballance_max = 40; // higher = more CPU usage.... from 100 -> 40
 
+
+if (IsDebugServer())
+{
+    $gi_load_ballance_max = 1000000000; // disable load ballance in debug mode
+}
+
+$glogging_fullname  = "";
 
 
 // make sure the server load stays low.
@@ -283,13 +276,14 @@ $glogging_fullname  = "";
 // > 10 10000 	(userGzProcess) Finished processing: 0 Hour, 27 Minutes, 24 Seconds
 function LoadBallance()
 {
-	global $gi_load_ballance;
-	$gi_load_ballance++;
-	if ($gi_load_ballance > 100)	// more = more CPU usage....
-	{
-		usleep(250);	// 0.25 msec sleep
-		$gi_load_ballance  = 0;
-	}
+    global $gi_load_ballance;
+    global $gi_load_ballance_max;
+    $gi_load_ballance++;
+    if ($gi_load_ballance > $gi_load_ballance_max)
+    {
+        usleep(500);	// 0.25 msec sleep used to be 0.5
+        $gi_load_ballance  = 0;
+    }
 }
 
 function GetTime()
@@ -367,7 +361,7 @@ function GetUrlFileTime($file)
 
 function UrlExists($url)
  { 
-    $hdrs = get_headers($url);
+    $hdrs = @get_headers($url);
 	if (is_array($hdrs))
 	{
 		$pos=  strpos($hdrs[0],"HTTP");

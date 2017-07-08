@@ -1,2 +1,4 @@
 Options -Indexes
+<IfModule pagespeed_module>
 Modpagespeed Off
+</IfModule>
